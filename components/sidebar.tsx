@@ -1,4 +1,4 @@
-import { ReposiroryType } from '@/app/types'
+import { ReposiroryType } from '@/app/types/repo.type'
 import StarIcon from '@/components/star.icon'
 import { FC } from 'react'
 
