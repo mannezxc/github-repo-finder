@@ -1,113 +1,142 @@
-import Image from "next/image";
+'use client'
+
+import { useAppDispatch, useAppSelector } from "@/lib/store";
+import { changeChoosenRepo, changeShownRepos } from "@/lib/reducers/repos";
+import { useEffect, useState } from "react";
+import Sidebar from "@/components/sidebar";
+import Header from "@/components/header";
+
+// Конкретное количество строк репозиториев на странице
+// Не стал делать выбор количества, так как нужно делать адаптив, а мне лень :)
+const reposPerPage = 8
 
 export default function Home() {
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
+    const {
+        shownRepos,
+        repos: findedRepos,
+        status: reposStatus,
+        choosenRepo,
+        error: repoError
+    } = useAppSelector(state => state.repos)
+    const dispatch = useAppDispatch()
+
+    const [searchInput, setSearchInput] = useState<string>('')
+    const [currentPage, setCurrentPage] = useState(0)
+    const [filterType, setFilterType] = useState('none')
+
+    const filterRepos = (type: string) => {
+        setFilterType(type)
+
+        switch (type) {
+            case 'forks':
+                dispatch(changeShownRepos([...findedRepos].sort((repo, nextRepo) => nextRepo.forks_count - repo.forks_count).slice(currentPage * reposPerPage, (currentPage + 1) * reposPerPage)))
+                break
+            case 'stars':
+                dispatch(changeShownRepos([...findedRepos].sort((repo, nextRepo) => nextRepo.stargazers_count - repo.stargazers_count).slice(currentPage * reposPerPage, (currentPage + 1) * reposPerPage)))
+                break
+            case 'date':
+                dispatch(changeShownRepos([...findedRepos].sort((repo, nextRepo) => new Date(nextRepo.updated_at).getTime() - new Date(repo.updated_at).getTime()).slice(currentPage * reposPerPage, (currentPage + 1) * reposPerPage)))
+                break
+            default:
+                dispatch(changeShownRepos([...findedRepos].slice(currentPage * reposPerPage, (currentPage + 1) * reposPerPage)))
+                break
+        }
+    }
+
+    useEffect(() => {
+        if (!!findedRepos.length) filterRepos(filterType)
+    }, [currentPage])
+
+    const formatDate = (updated_at: string) => new Date(updated_at).toLocaleDateString('ru', { day: "2-digit", month: '2-digit', year: '2-digit' })
+
+    return (
+        <>
+            <Header
+                searchInput={searchInput}
+                setSearchInput={setSearchInput}
             />
-          </a>
-        </div>
-      </div>
 
-      <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  );
+            <main className="flex items-center justify-center h-[calc(100dvh-var(--header-height))] w-full">
+                {reposStatus == 'pending' ? <span className="loader" />
+                    : !searchInput || !shownRepos.length || reposStatus == 'rejected' ? (
+                        <span className="text-[46px] text-[--gray-color-300]">
+                            {reposStatus == 'rejected'
+                                ? repoError
+                                : 'Добро пожаловать'}
+                        </span>
+                    ) : (
+                        <div className="relative h-full w-full flex">
+                            <div className="flex flex-col h-full w-full">
+                                <section className="h-full w-full pl-8 pr-4 py-6">
+                                    <h2 className="">
+                                        Результаты поиска
+                                    </h2>
+                                    <table className="text-left w-full">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Название</th>
+                                                <th scope="col">Язык</th>
+                                                <th className="cursor-pointer" onClick={() => {
+                                                    filterRepos('forks')
+                                                    setCurrentPage(0)
+                                                }} scope="col">Число форков</th>
+                                                <th className="cursor-pointer" onClick={() => {
+                                                    filterRepos('stars')
+                                                    setCurrentPage(0)
+                                                }} scope="col">Число звезд</th>
+                                                <th className="cursor-pointer" onClick={() => {
+                                                    filterRepos('date')
+                                                    setCurrentPage(0)
+                                                }} scope="col">Дата обновления</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {shownRepos.map((repo) => (
+                                                <tr key={repo.id} onClick={() => dispatch(changeChoosenRepo(repo))}>
+                                                    <th scope="row">{repo.full_name}</th>
+                                                    <td>{repo.language}</td>
+                                                    <td>{repo.forks_count}</td>
+                                                    <td>{repo.stargazers_count}</td>
+                                                    <td>{formatDate(repo.updated_at)}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </section>
+                                <div className="w-full py-0.5 flex items-center justify-end gap-[26px]">
+                                    <p className="text-sm">
+                                        {currentPage * reposPerPage}-{(currentPage + 1) * reposPerPage} of {(Math.ceil(findedRepos.length / reposPerPage) * reposPerPage)}
+                                    </p>
+                                    <div>
+                                        <button
+                                            className="p-3"
+                                            onClick={() => setCurrentPage(prev => {
+                                                if (prev == 0) return prev
+                                                return prev - 1
+                                            })}
+                                        >
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M15.705 7.41L14.295 6L8.29504 12L14.295 18L15.705 16.59L11.125 12L15.705 7.41Z" fill="black" fillOpacity="0.56" />
+                                            </svg>
+                                        </button>
+                                        <button
+                                            className="p-3"
+                                            onClick={() => setCurrentPage(prev => {
+                                                if (prev + 1 == Math.ceil(findedRepos.length / reposPerPage)) return prev
+                                                return prev + 1
+                                            })}
+                                        >
+                                            <svg className="rotate-180" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M15.705 7.41L14.295 6L8.29504 12L14.295 18L15.705 16.59L11.125 12L15.705 7.41Z" fill="black" fillOpacity="0.56" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <Sidebar choosenRepo={choosenRepo} />
+                        </div>
+                    )}
+            </main >
+        </>
+    );
 }

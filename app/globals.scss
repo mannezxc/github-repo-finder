@@ -1,0 +1,156 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --primary-color: #00838F;
+    --blue-color: #2196F3;
+    --gray-color-100: #F2F2F2;
+    --gray-color-200: #0000001F;
+    --gray-color-300: #4F4F4F;
+    --header-height: 80px;
+}
+
+html, body {
+    overflow: hidden;
+}
+
+.loader {
+    border-radius: 32px;
+    width: 32px;
+    height: 32px;
+    @apply animate-spin;
+    border-top: 3px solid var(--gray-color-300);
+    border-bottom: 3px solid var(--gray-color-300);
+    border-right: 3px solid transparent;
+    border-left: 3px solid var(--gray-color-300);
+}
+
+h2 {
+    font-size: 48px;
+    font-weight: 400;
+    line-height: 56.02px;
+    margin-bottom: 24px;
+}
+h3 {
+    font-size: 32px;
+    font-weight: 400;
+    line-height: 40px;
+    margin-bottom: 16px;
+}
+
+thead, tbody tr {
+    border-bottom: 1px solid #0000001F;
+}
+
+th, td {
+    padding: 16px 10px;
+}
+
+thead {
+    th {
+        font-size: .875rem;
+        font-weight: 500;
+        line-height: 24px;
+        letter-spacing: 0.17px;
+        white-space: nowrap;
+    }
+}
+
+tbody {
+    th {
+        @apply max-w-[150px] overflow-hidden text-ellipsis;
+    }
+    td, th {
+        font-size: .875rem;
+        font-weight: 400;
+        line-height: 24px;
+        letter-spacing: 0.17px;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+}
+
+* {
+    padding: 0;
+    margin: 0;
+    border: 0;
+}
+
+*,
+*:before,
+*:after {
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+:focus,
+:active {
+    outline: none;
+}
+
+a:focus,
+a:active {
+    outline: none;
+}
+
+nav,
+footer,
+header,
+aside {
+    display: block;
+}
+
+html,
+body {
+    font-weight: 400;
+    height: 100%;
+    width: 100%;
+    line-height: 1;
+    -ms-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+}
+
+input,
+button,
+textarea {
+    font-family: inherit;
+}
+
+input::-ms-clear {
+    display: none;
+}
+
+button {
+    background: initial;
+    color: inherit;
+    cursor: pointer;
+}
+
+button::-moz-focus-inner {
+    padding: 0;
+    border: 0;
+}
+
+a,
+a:visited {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+ul li {
+    list-style: none;
+}
+
+img {
+    vertical-align: top;
+}
+
+a {
+    color: inherit;
+}
